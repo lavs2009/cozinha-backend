@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model cozinheira_tb {
+  id_usuario Int        @id @default(autoincrement())
+  nome       String     @db.VarChar(255)
+  email      String     @unique(map: "cozinheira_tb_email_unique") @db.VarChar(255)
+  senha      String     @db.VarChar(255)
+  prato_tb   prato_tb[]
+}
+
+model prato_tb {
+  id_prato      Int           @id @default(autoincrement())
+  dia           DateTime      @db.Date
+  turno         String        @db.VarChar(50)
+  principal     String        @db.VarChar(255)
+  sobremesa     String        @db.VarChar(255)
+  bebida        String        @db.VarChar(255)
+  imagem        String?       @db.VarChar(255)
+  id_usuario    Int
+  cozinheira_tb cozinheira_tb @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "prato_tb_usuario_fk")
+  votacao_tb    votacao_tb[]
+}
+
+model votacao_tb {
+  id_voto    Int      @id @default(autoincrement())
+  id_prato   Int
+  voto       Boolean
+  data_voto  DateTime @db.Date
+  ip_usuario String   @db.Inet
+  prato_tb   prato_tb @relation(fields: [id_prato], references: [id_prato], onDelete: NoAction, onUpdate: NoAction, map: "votacao_tb_prato_fk")
+
+  @@unique([ip_usuario, id_prato], map: "votacao_tb_unico_ip_prato")
+}

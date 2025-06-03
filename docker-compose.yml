@@ -1,0 +1,31 @@
+
+services:
+  app:
+    build: .
+    container_name: backend-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/cantina
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: sh -c "npx prisma db pull --schema=prisma/schema.prisma && npx prisma generate --schema=prisma/schema.prisma && yarn dev"
+
+  db:
+    image: postgres:17
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cantina
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

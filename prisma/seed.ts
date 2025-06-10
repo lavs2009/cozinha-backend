@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 async function main() {
   // Cria 1 cozinheira
-  const cozinheira = await prisma.cozinheira_tb.create({
+  const cozinheira = await prisma.cozinheira.create({
     data: {
       nome: 'Maria da Cozinha',
       email: 'maria@example.com',
@@ -28,7 +28,7 @@ async function main() {
   hoje.setHours(0, 0, 0, 0) // zerar hora
 
   for (const prato of pratos) {
-    await prisma.prato_tb.create({
+    await prisma.prato.create({
       data: {
         dia: hoje,
         turno: 'Noturno',

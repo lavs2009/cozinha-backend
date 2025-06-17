@@ -94,9 +94,10 @@ EOF
 echo "🎉 Estrutura criada com sucesso! Rode 'yarn dev' para iniciar o servidor."
 #sudo docker compose up --build
 #sudo docker exec -i postgres-db psql -U postgres -d cantina < db/schema.sql
+#sudo docker exec -it backend-app npx prisma db seed
 #sudo docker exec -it postgres-db psql -U postgres -d cantina entrar no banco de dados
+#sudo docker exect -it backend-app npx prisma migrate reset
 # 
 #sudo docker exec -it backend-app npx prisma db pull 
 #sudo docker exec -it backend-app npx prisma generate
-#sudo docker exect -it backend-app npx prisma migrate reset
-#sudo docker exec -it backend-app npx prisma db seed
+#sudo docker exec -it backend-app yarn dev

@@ -17,7 +17,7 @@ app.post('/votacao', async (req: Request, res: Response) => {
   }
 
   try {
-    const votoCriado = await prisma.votacao_tb.create({
+    const votoCriado = await prisma.votacao.create({
       data: {
         id_prato,
         voto,
@@ -46,8 +46,8 @@ app.get('/votacao', async (req: Request, res: Response) => {
         p.principal,
         COUNT(CASE WHEN v.voto = TRUE THEN 1 END) AS votos_sim,
         COUNT(CASE WHEN v.voto = FALSE THEN 1 END) AS votos_nao
-      FROM prato_tb p
-      LEFT JOIN votacao_tb v
+      FROM prato p
+      LEFT JOIN votacao v
         ON p.id_prato = v.id_prato
         AND DATE(v.data_voto) = CURRENT_DATE
       WHERE DATE(p.dia) = CURRENT_DATE
@@ -72,7 +72,7 @@ app.get('/votacao', async (req: Request, res: Response) => {
 // GET /pratos - retorna todos os pratos
 app.get('/pratos', async (req: Request, res: Response) => {
   try {
-    const pratos = await prisma.prato_tb.findMany({
+    const pratos = await prisma.prato.findMany({
       orderBy: { id_prato: 'asc' },
     });
 
@@ -92,7 +92,7 @@ app.post('/signup', async (req: Request, res: Response) => {
   }
 
   try {
-    const novaCozinheira = await prisma.cozinheira_tb.create({
+    const novaCozinheira = await prisma.cozinheira.create({
       data: { nome, email, senha } // senha salva em texto plano (somente para fins didáticos)
     });
 
@@ -115,7 +115,7 @@ app.post('/signin', async (req: Request, res: Response) => {
   }
 
   try {
-    const cozinheira = await prisma.cozinheira_tb.findUnique({ where: { email } });
+    const cozinheira = await prisma.cozinheira.findUnique({ where: { email } });
 
     if (!cozinheira || cozinheira.senha !== senha) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
@@ -144,7 +144,7 @@ app.post('/pratos', async (req: Request, res: Response) => {
   }
 
   try {
-    const prato = await prisma.prato_tb.create({
+    const prato = await prisma.prato.create({
       data: { dia, turno, principal, sobremesa, bebida, imagem, id_usuario }
     });
 
@@ -160,7 +160,7 @@ app.get('/pratos/usuario/:id_usuario', async (req: Request, res: Response) => {
   const id_usuario = Number(req.params.id_usuario);
 
   try {
-    const pratos = await prisma.prato_tb.findMany({ where: { id_usuario } });
+    const pratos = await prisma.prato.findMany({ where: { id_usuario } });
     res.json(pratos);
   } catch (error) {
     console.error(error);
@@ -174,10 +174,10 @@ app.put('/pratos/:id', async (req: Request, res: Response) => {
   const { dia, turno, principal, sobremesa, bebida, imagem, id_usuario } = req.body;
 
   try {
-    const pratoExistente = await prisma.prato_tb.findFirst({ where: { id_prato, id_usuario } });
+    const pratoExistente = await prisma.prato.findFirst({ where: { id_prato, id_usuario } });
     if (!pratoExistente) return res.status(404).json({ error: 'Prato não encontrado ou sem permissão' });
 
-    const pratoAtualizado = await prisma.prato_tb.update({
+    const pratoAtualizado = await prisma.prato.update({
       where: { id_prato },
       data: { dia, turno, principal, sobremesa, bebida, imagem }
     });
@@ -195,10 +195,10 @@ app.delete('/pratos/:id', async (req: Request, res: Response) => {
   const { id_usuario } = req.body;
 
   try {
-    const pratoExistente = await prisma.prato_tb.findFirst({ where: { id_prato, id_usuario } });
+    const pratoExistente = await prisma.prato.findFirst({ where: { id_prato, id_usuario } });
     if (!pratoExistente) return res.status(404).json({ error: 'Prato não encontrado ou sem permissão' });
 
-    await prisma.prato_tb.delete({ where: { id_prato } });
+    await prisma.prato.delete({ where: { id_prato } });
     res.json({ message: 'Prato excluído com sucesso' });
   } catch (error) {
     console.error(error);
@@ -222,7 +222,7 @@ app.get('/pratos/buscar', async (req: Request, res: Response) => {
       };
     }
 
-    const pratos = await prisma.prato_tb.findMany({ where: filtro });
+    const pratos = await prisma.prato.findMany({ where: filtro });
     res.json(pratos);
   } catch (error) {
     console.error(error);
